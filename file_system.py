@@ -1,66 +1,35 @@
-import shelve
+class FileSystem:
+    """
+    This implementation uses a dictionary to represent the directories and their contents. The current directory is stored as a 
+    string and updated when the cd function is called. The ls function returns the contents of the current directory, the mkdir function 
+    creates a new directory if it does not already exist, and the touch function adds a file to the current directory.
+    """
+    def __init__(self):
+        self.current_directory = "/"
+        self.directories = {"/": []}
 
-fs = shelve.open('filesystem.fs', writeback=True)
-current_dir = []
+    def ls(self):
+        return self.directories[self.current_directory]
 
-username = input('What do you want your username to be? ')
-
-
-def install(fs):
-    fs[""] = {"System": {}, "Users": {username: {}}}
-
-def current_dictionary():
-    d = fs[""]
-    for key in current_dir:
-        d = d[key]
-    return d
-       
-def ls(args):
-    print (f"{username}'s Content"), "/" + "/".join(current_dir) + ':'
-    for i in current_dictionary():
-        print (i)
-
-def cd(args):
-    if len(args) != 1:
-        print ("Usage: cd <directory>")
-        return
-
-    if args[0] == "..":
-        if len(current_dir) == 0:
-            print ("Cannot go above root")
+    def mkdir(self, directory):
+        if directory in self.directories:
+            print(f"Directory {directory} already exists")
         else:
-            current_dir.pop()
-    elif args[0] not in current_dictionary():
-        print ("Directory " + args[0] + " not found")
-    else:
-        current_dir.append(args[0])
+            self.directories[directory] = []
+            self.directories[self.current_directory].append(directory)
 
+    def cd(self, directory):
+        if directory not in self.directories:
+            print(f"Directory {directory} does not exist")
+        else:
+            self.current_directory = directory
 
-def mkdir(args):
-    if len(args) != 1:
-        print ("Usage: mkdir <directory>")
-        return
-    d = current_dictionary()[args[0]] = {}
-    fs.sync()
+    def touch(self, file):
+        self.directories[self.current_directory].append(file)
 
-def touch(args):
-    if len(args) != 1:
-        print ("Usage: touch <file>")
-        return
-    d = current_dictionary()[args[0]] = {}
-    fs.sync()
-
-def close(args):
-    fs.close()
-
-
-COMMANDS = {'ls' : ls, 'cd': cd, 'mkdir': mkdir, 'touch': touch, 'close': close}
-
-install(fs)
-
-while True:
-    raw = input('>>')
-    cmd = raw.split()[0]
-    if cmd in COMMANDS:
-        COMMANDS[cmd](raw.split()[1:])
+file_system = FileSystem()
+file_system.mkdir("docs")
+file_system.cd("docs")
+file_system.touch("file.txt")
+print(file_system.ls())
 
