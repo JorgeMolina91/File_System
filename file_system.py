@@ -8,6 +8,9 @@ class FileSystem:
         self.current_directory = "/"
         self.directories = {"/": []}
 
+    def pwd(self):
+        return self.current_directory
+
     def ls(self):
         return self.directories[self.current_directory]
 
@@ -27,9 +30,15 @@ class FileSystem:
     def touch(self, file):
         self.directories[self.current_directory].append(file)
 
-file_system = FileSystem()
-file_system.mkdir("docs")
-file_system.cd("docs")
-file_system.touch("file.txt")
-print(file_system.ls())
+if __name__ == "__main__":
+    file_system = FileSystem()
+
+    # Usage examples
+    print(file_system.pwd()) # It prints current directory
+    print(file_system.ls())  # It lists files in the current directory
+    file_system.mkdir("/docs")  # It creates a new file
+    file_system.cd("/docs")  # It changes to a new directory
+    file_system.touch("file.txt")  # It creates a file in the current directory
+    print(file_system.ls()) # It lists files in the current directory
+    print(file_system.pwd()) # It prints current directory
 
